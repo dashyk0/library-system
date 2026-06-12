@@ -1,0 +1,67 @@
+{% macro book_form(book, genres, selected_genres, is_edit=False) %}
+<form method="post" enctype="multipart/form-data" action="{{ url_for('books.add_book') if not is_edit else url_for('books.edit_book', book_id=book.id) }}">
+    <div class="mb-3">
+        <label for="title" class="form-label">Название *</label>
+        <input type="text" class="form-control" id="title" name="title" value="{{ book.title if book else '' }}" required>
+    </div>
+    
+    <div class="mb-3">
+        <label for="author" class="form-label">Автор *</label>
+        <input type="text" class="form-control" id="author" name="author" value="{{ book.author if book else '' }}" required>
+    </div>
+    
+    <div class="row">
+        <div class="col-md-6 mb-3">
+            <label for="year" class="form-label">Год *</label>
+            <input type="number" class="form-control" id="year" name="year" value="{{ book.year if book else '' }}" required>
+        </div>
+        <div class="col-md-6 mb-3">
+            <label for="pages" class="form-label">Объём (страниц) *</label>
+            <input type="number" class="form-control" id="pages" name="pages" value="{{ book.pages if book else '' }}" required>
+        </div>
+    </div>
+    
+    <div class="mb-3">
+        <label for="publisher" class="form-label">Издательство *</label>
+        <input type="text" class="form-control" id="publisher" name="publisher" value="{{ book.publisher if book else '' }}" required>
+    </div>
+    
+    <div class="mb-3">
+        <label for="genres" class="form-label">Жанры * (можно выбрать несколько)</label>
+        <select class="form-select" id="genres" name="genres" multiple size="5" required>
+            {% for genre in genres %}
+                <option value="{{ genre.id }}" {% if genre.id|string in selected_genres %}selected{% endif %}>
+                    {{ genre.name }}
+                </option>
+            {% endfor %}
+        </select>
+        <small class="text-muted">Удерживайте Ctrl (Cmd) для выбора нескольких</small>
+    </div>
+    
+    <div class="mb-3">
+        <label for="description" class="form-label">Описание * (Markdown)</label>
+        <textarea class="form-control" id="description" name="description" rows="10" required>{{ book.description if book else '' }}</textarea>
+    </div>
+    
+    {% if not is_edit %}
+    <div class="mb-3">
+        <label for="cover" class="form-label">Обложка (изображение)</label>
+        <input class="form-control" type="file" id="cover" name="cover" accept="image/png, image/jpeg, image/jpg, image/gif">
+        <small class="text-muted">Разрешены PNG, JPG, JPEG, GIF. Максимум 16 МБ.</small>
+    </div>
+    {% else %}
+        {% if book and book.cover_filename %}
+            <div class="mb-3">
+                <label>Текущая обложка</label><br>
+                <img src="{{ url_for('static', filename='uploads/' + book.cover_filename) }}" style="max-height: 100px;">
+                <p class="text-muted mt-2"><small>При редактировании обложка не меняется.</small></p>
+            </div>
+        {% endif %}
+    {% endif %}
+    
+    <div class="d-flex justify-content-between">
+        <a href="{{ url_for('books.index') }}" class="btn btn-secondary">Отмена</a>
+        <button type="submit" class="btn btn-primary">Сохранить</button>
+    </div>
+</form>
+{% endmacro %}

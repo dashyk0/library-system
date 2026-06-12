@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+{% from "macros.html" import book_form %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header bg-primary text-white">
+                <h3 class="mb-0">{{ 'Добавление книги' if not book else 'Редактирование книги' }}</h3>
+            </div>
+            <div class="card-body">
+                {{ book_form(book, genres, selected_genres, is_edit=book is not none) }}
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- EasyMDE для Markdown -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/easymde/dist/easymde.min.css">
+<script src="https://cdn.jsdelivr.net/npm/easymde/dist/easymde.min.js"></script>
+<script>
+    const easyMDE = new EasyMDE({ 
+        element: document.getElementById('description'),
+        forceSync: true
+    });
+    const form = document.querySelector('form');
+    form.setAttribute('novalidate', true);
+    form.addEventListener('submit', function(e) {
+        easyMDE.codemirror.save();
+        const textarea = document.getElementById('description');
+        if (!textarea.value.trim()) {
+            alert('Пожалуйста, заполните описание книги.');
+            e.preventDefault();
+            return false;
+        }
+    });
+</script>
+{% endblock %}

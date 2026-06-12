@@ -1,0 +1,55 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header bg-primary text-white">
+                <h3 class="mb-0">Рецензия на книгу "{{ book.title }}"</h3>
+            </div>
+            <div class="card-body">
+                <form method="post" action="{{ url_for('reviews.add_review', book_id=book.id) }}">
+                    <div class="mb-3">
+                        <label for="rating" class="form-label">Оценка</label>
+                        <select class="form-select" id="rating" name="rating" required>
+                            <option value="5" {% if rating == 5 %}selected{% endif %}>5 – отлично</option>
+                            <option value="4" {% if rating == 4 %}selected{% endif %}>4 – хорошо</option>
+                            <option value="3" {% if rating == 3 %}selected{% endif %}>3 – удовлетворительно</option>
+                            <option value="2" {% if rating == 2 %}selected{% endif %}>2 – неудовлетворительно</option>
+                            <option value="1" {% if rating == 1 %}selected{% endif %}>1 – плохо</option>
+                            <option value="0" {% if rating == 0 %}selected{% endif %}>0 – ужасно</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label for="text" class="form-label">Текст рецензии (Markdown)</label>
+                        <textarea class="form-control" id="text" name="text" rows="10" required>{{ text }}</textarea>
+                    </div>
+                    <div class="d-flex justify-content-between">
+                        <a href="{{ url_for('books.book_detail', book_id=book.id) }}" class="btn btn-secondary">Отмена</a>
+                        <button type="submit" class="btn btn-primary">Сохранить рецензию</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/easymde/dist/easymde.min.css">
+<script src="https://cdn.jsdelivr.net/npm/easymde/dist/easymde.min.js"></script>
+<script>
+    const easyMDE = new EasyMDE({ 
+        element: document.getElementById('text'),
+        forceSync: true
+    });
+    const form = document.querySelector('form');
+    form.setAttribute('novalidate', true);
+    form.addEventListener('submit', function(e) {
+        easyMDE.codemirror.save();
+        const textarea = document.getElementById('text');
+        if (!textarea.value.trim()) {
+            alert('Пожалуйста, напишите текст рецензии');
+            e.preventDefault();
+            return false;
+        }
+    });
+</script>
+{% endblock %}
