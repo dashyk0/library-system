@@ -1,0 +1,3 @@
+admin    admin123
+moderator moderator
+qwerty  qwerty
